@@ -115,7 +115,7 @@ Game.prototype.moveToState = function(state) {
 Game.prototype.start = function() {
 
     //  Move into the 'welcome' state.
-    this.moveToState(new WelcomeState());
+    this.moveToState(new DisplayState());
 
     //  Set the game letiables.
     this.lives = 3;
@@ -214,6 +214,44 @@ Game.prototype.keyUp = function(keyCode) {
         this.currentState().keyUp(this, keyCode);
     }
 };
+
+function DisplayState() {
+
+}
+
+DisplayState.prototype.enter = function(game) {
+    let ctx = game.gameCanvas.getContext("2d");
+
+    this.laser = [];
+    this.particles = [];
+    //
+    this.text = new Text({
+        copy: 'Dataiku presents : Egg Invaders',
+        x: game.width*0.2,
+        y: game.height*0.2
+    }, ctx, this.laser, this.particles);
+}
+
+DisplayState.prototype.update = function(game, dt) {
+    const done = this.text.update();
+    if (done == "done") {
+        game.moveToState(new WelcomeState());
+    }
+    this.laser.forEach((l, i) => l.update(i, this.laser));
+    this.particles.forEach(p => p.update());
+}
+
+DisplayState.prototype.draw = function(game, dt, ctx) {
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, game.width, game.height);
+    //
+    ctx.globalCompositeOperation = 'screen';
+    this.text.render(ctx);
+    this.laser.forEach(l => l.render(ctx));
+    this.particles.forEach(p => p.render(ctx));
+}
 
 function WelcomeState() {
 
@@ -571,25 +609,25 @@ PlayState.prototype.getImage = function(name) {
     let image = new Image();
     switch (name) {
         case 'birdUp':
-            image.src = 'images/ship/birdUp.png';
+            image.src = 'images/birdUp.png';
             return image;
         case 'birdMid':
-            image.src = 'images/ship/birdMid.png';
+            image.src = 'images/birdMid.png';
             return image;
         case 'birdDown':
-            image.src = "images/ship/birdDown.png";
+            image.src = "images/birdDown.png";
             return image;
         case 'invader':
-            image.src = "images/eggs/egg.png";
+            image.src = "images/egg.png";
             return image;
         case 'bomb':
-            image.src = "images/bomb/bomb.png";
+            image.src = "images/bomb.png";
             return image;
         case 'rocket':
-            image.src = "images/rocket/startup.png";
+            image.src = "images/startup.png";
             return image;
         case 'invaderKilled':
-            image.src = "images/eggs/friedegg.png";
+            image.src = "images/friedegg.png";
             return image;
         case 'bonus':
             image.src = "images/bonus.png";

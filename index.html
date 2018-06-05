@@ -5,6 +5,7 @@
         <link rel="stylesheet" type="text/css" href="css/core.css">
         <link rel="stylesheet" type="text/css" href="css/typeography.css">
         <link rel="stylesheet" type="text/css" href="css/laser.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <style>
     
             /* Styling needed for a fullscreen canvas and no scrollbars. */
@@ -17,32 +18,21 @@
             }
 
             #starfield {
-                width:100%;
-                height:100%;
                 z-index: -1;
                 position: absolute;
-                left: 0px;
-                top: 0px;
-            }
-            #gamecontainer {
-                width: 800px;
-                margin-left: auto;
-                margin-right: auto;
             }
             #gamecanvas { 
-                width: 800px;
-                height: 600px;
+                width: 100%;
+                height: 100%;
             }
             #info {
-                width: 800px;
-                margin-left: auto;
-                margin-right: auto;
+                width: 100%;
+                z-index: 1;
             }
         </style>
     </head>
     <body>
         <div id="starfield"></div>
-        <div id="gamecontainer">
         <canvas id="gameCanvas"></canvas>
         </div>
         <div id="info">
@@ -57,6 +47,7 @@
 
         <script src="js/starfield.js"></script>
         <script src="js/spaceinvaders.js"></script>
+        <script src="js/laser.js"></script>
         <script>
 
             //  Create the starfield.
@@ -67,8 +58,8 @@
 
             //  Setup the canvas.
             var canvas = document.getElementById("gameCanvas");
-            canvas.width = 800;
-            canvas.height = 600;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
             //  Create the game.
             var game = new Game();
@@ -92,6 +83,10 @@
                 var keycode = e.which || window.event.keycode;
                 game.keyUp(keycode);
             });
+
+            document.body.addEventListener('touchmove', function(event) {
+              event.preventDefault();
+            }, false); 
 
             function toggleMute() {
                 game.mute();

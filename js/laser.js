@@ -1,5 +1,3 @@
-let canvas, ctx, w, h, laser, text, particles, input;
-
 function Laser(options) {
     options = options || {};
     this.lifespan = options.lifespan || Math.round(Math.random() * 20 + 20);
@@ -21,7 +19,7 @@ function Laser(options) {
         ctx.strokeStyle = this.color;
         ctx.lineWidth = this.width;
         ctx.moveTo(this.x, this.y);
-        ctx.lineTo(w, this.y);
+        ctx.lineTo(window.innerWidth, this.y);
         ctx.stroke();
         ctx.closePath();
     }
@@ -41,7 +39,7 @@ function Spark(options) {
     this.width = options.width || Math.random() * 3;
     this.lifespan = options.lifespan || Math.round(Math.random() * 20 + 40);
     this.maxlife = this.lifespan;
-    this.color = options.color || '#fdab23';
+    this.color = options.color || '#feda4a';
     this.prev = { x: this.x, y: this.y };
 
     this.update = function(index, array) {
@@ -88,34 +86,28 @@ function Particles(options) {
     }
 }
 
-function Text(options) {
+function Text(options, ctx, laser, particles) {
     options = options || {};
-    const pool = document.createElement('canvas');
-    const buffer = pool.getContext('2d');
-    pool.width = w;
-    buffer.fillStyle = '#000000';
-    buffer.fillRect(0, 0, pool.width, pool.height);
 
     this.size = options.size || 100;
-    this.copy = (options.copy || `Hello!`) + ' ';
-    this.color = options.color || '#fecd96';
-    this.delay = options.delay || 4;
+    this.copy = options.copy || `Hello!`;
+    this.color = options.color || '#feda4a';
+    this.delay = options.delay || 1;
     this.basedelay = this.delay;
-    buffer.font = `${this.size}px Comic Sans MS`;
-    this.bound = buffer.measureText(this.copy);
-    this.bound.height = this.size * 1.5;
+    ctx.font = `${this.size}px Franklin Gothic Medium Condensed`;
+    this.bound = ctx.measureText(this.copy);
+    this.bound.height = this.size * 1.1;
     this.x = options.x || w * 0.5 - this.bound.width * 0.5;
     this.y = options.y || h * 0.5 - this.size * 0.5;
 
-    buffer.strokeStyle = this.color;
-    buffer.strokeText(this.copy, 0, this.bound.height * 0.8);
-    this.data = buffer.getImageData(0, 0, this.bound.width, this.bound.height);
+    ctx.strokeStyle = this.color;
+    ctx.strokeText(this.copy, 0, this.bound.height * 0.8);
+    this.data = ctx.getImageData(0, 0, this.bound.width, this.bound.height);
     this.index = 0;
 
     this.update = function() {
         if (this.index >= this.bound.width) {
-            this.index = 0;
-            return;
+            return "done";
         }
         const data = this.data.data;
         for (let i = this.index * 4; i < data.length; i += (4 * this.data.width)) {
@@ -151,6 +143,7 @@ function update() {
     text.update();
     laser.forEach((l, i) => l.update(i, laser));
     particles.forEach(p => p.update());
+    value.update();
 }
 
 function render() {
@@ -164,43 +157,3 @@ function render() {
     laser.forEach(l => l.render(ctx));
     particles.forEach(p => p.render(ctx));
 }
-
-(function () {
-    //
-    canvas = document.getElementById('canvas');
-    input = document.getElementById('input');
-    ctx = canvas.getContext('2d');
-    w = window.innerWidth;
-    h = window.innerHeight;
-    canvas.width = w;
-    canvas.height = h;
-    laser = [];
-    particles = [];
-    //
-    text = new Text({
-        copy: 'Dataiku presents'
-    });
-    canvas.addEventListener('click', (e) => {
-        const x = e.clientX;
-        const y = e.clientY;
-        laser.push(new Laser({
-            x: x,
-            y: y
-        }));
-        particles.push(new Particles({
-            x: x,
-            y: y
-        }));
-    });
-    let cb = 0;
-    input.addEventListener('keyup', (e) => {
-        clearTimeout(cb);
-        cb = setTimeout(() => {
-            text = new Text({
-                copy: input.value
-            });
-        }, 300);
-    });
-    //
-    loop();
-})()
