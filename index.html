@@ -31,7 +31,7 @@
             }
             #warning-message { display: none; }
             @media only screen and (orientation:portrait){
-                #starfield { display:none; }
+                .hidePortrait { display:none; }
                 #warning-message { display:block; }
             }
             @media only screen and (orientation:landscape){
@@ -40,10 +40,12 @@
         </style>
     </head>
     <body>
-        <div id="starfield"></div>
-            <canvas id="gameCanvas"></canvas>
+        <div id="warning-message">
+            This website is only viewable in landscape mode
         </div>
-        <div id="info">
+        <div id="starfield" class="hidePortrait"></div>
+        <canvas id="gameCanvas" class="hidePortrait"></canvas>
+        <div id="info" class="hidePortrait">
             <p>Move with arrow keys, fire with the space bar. The invaders get faster and drop
                 more bombs as you complete each level!</p>
             <p><a id="muteLink" href="#" onclick="toggleMute()">mute</a> | 
@@ -51,9 +53,6 @@
                 <a href="http://www.dwmkerr.com/experiments">more experiments</a> | <a href="http://www.dwmkerr.com">dwmkerr.com</a></p>
                 
                 <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
-        </div>
-        <div id="warning-message">
-            This website is only viewable in landscape mode
         </div>
 
         <script src="js/starfield.js"></script>
@@ -98,16 +97,12 @@
             canvas.addEventListener("touchstart", function(e) {
                 game.handleStart(e);
             });
-            /*
             canvas.addEventListener("touchend", function(e) {
                 game.handleEnd(e);
             });
-            canvas.addEventListener("touchcancel", function(e) {
-                game.handleCancel(e);
-            });
             canvas.addEventListener("touchmove", function(e) {
                 game.handleMove(e);
-            });*/
+            });
 
             function toggleMute() {
                 game.mute();

@@ -222,6 +222,19 @@ Game.prototype.handleStart = function(e) {
     }
 };
 
+Game.prototype.handleEnd = function(e) {
+    e.preventDefault();
+    if(this.currentState() && this.currentState().handleEnd) {
+        this.currentState().handleEnd(this, e);
+    }
+};
+
+Game.prototype.handleMove = function(e) {
+    e.preventDefault();
+    if(this.currentState() && this.currentState().handleMove) {
+        this.currentState().handleMove(this, e);
+    }
+};
 
 function DisplayState() {
 
@@ -756,16 +769,29 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 };
 
 PlayState.prototype.handleStart = function(game, e) {
-    if (e.touches.length == 1) {
+    if (e.targetTouches.length == 1) {
         let millis = Date.now() - this.lastTouchTime;
+        this.lastTouchTime = Date.now();
         console.log(millis);
 
         // Double tap touch event
-        if (millis < 100000) {
+        if (millis < 600) {
             this.fireRocket();
         } else {
-            this.touchFired = e.touches.item(0);
+            this.touchFired = e.targetTouches.item(0);
         }
+    }
+}
+
+PlayState.prototype.handleEnd = function(game, e) {
+    if (e.targetTouches.length == 0) {
+        this.touchFired = null;
+    }
+}
+
+PlayState.prototype.handleMove = function(game, e) {
+    if (e.targetTouches.length == 1) {
+        this.touchFired = e.targetTouches.item(0);
     }
 }
 
@@ -822,7 +848,6 @@ function PauseState() {
 }
 
 PauseState.prototype.keyDown = function(game, keyCode) {
-
     if(keyCode == 80) {
         //  Pop the pause state.
         game.popState();
