@@ -216,6 +216,7 @@ Game.prototype.keyUp = function(keyCode) {
 };
 
 Game.prototype.handleStart = function(e) {
+    e.preventDefault();
     if(this.currentState() && this.currentState().handleStart) {
         this.currentState().handleStart(this, e);
     }
