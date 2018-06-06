@@ -22,19 +22,22 @@
                 z-index: -1;
                 position: absolute;
             }
+            #gamecanvas { 
+                width: 100%;
+                height: 80%;
+            }
             #info {
                 width: 100%;
                 z-index: 1;
+            }
+            @media only screen and (max-width: 1070px) {
+                .checkIsMobile { display: none; }
             }
             #warning-message { display: none; }
             @media only screen and (orientation:portrait){
             }
             @media only screen and (orientation:landscape){
                 #warning-message { display:none; }
-                #gamecanvas { 
-                    width: 100%;
-                    height: 80%;
-                }
             }
         </style>
     </head>
@@ -53,13 +56,13 @@
                 
                 <div>Icons made by <a href="http://www.freepik.com" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
         </div>
-
+        <div class="checkIsMobile"></div>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
         <script src="js/starfield.js"></script>
         <script src="js/spaceinvaders.js"></script>
         <script src="js/laser.js"></script>
         <script>
             screen.orientation.lock('landscape');
-            window.scrollTo(0,1);
             //window.screen.lockOrientation('landscape');
             //  Create the starfield.
             var container = document.getElementById('starfield');
@@ -75,8 +78,16 @@
             //  Create the game.
             var game = new Game();
 
+            let isMobile = false;
+            let initFullScreen = true;
+            $( document ).ready(function() {      
+                if( $('#checkIsMobile').css('display')=='none') {
+                    isMobile = true;
+                }
+            });
+
             //  Initialise it with the game canvas.
-            game.initialise(canvas);
+            game.initialise(canvas, isMobile);
 
             //  Start the game.
             game.start();
@@ -91,11 +102,19 @@
                 game.keyDown(keycode);
             });
             window.addEventListener("keyup", function keydown(e) {
+                if (!isFullScreen() && initFullScreen) {
+                    initFullScreen = false;
+                    requestFullScreen(document.documentElement);
+                }
                 var keycode = e.which || window.event.keycode;
                 game.keyUp(keycode);
             });
 
             canvas.addEventListener("touchstart", function(e) {
+                if (!isFullScreen() && initFullScreen) {
+                    initFullScreen = false;
+                    requestFullScreen(document.documentElement);
+                }
                 game.handleStart(e);
             });
             canvas.addEventListener("touchend", function(e) {
@@ -104,6 +123,23 @@
             canvas.addEventListener("touchmove", function(e) {
                 game.handleMove(e);
             });
+
+            function requestFullScreen(element) {
+                if (element.requestFullscreen)
+                    element.requestFullscreen();
+                else if (element.msRequestFullscreen)
+                    element.msRequestFullscreen();
+                else if (element.mozRequestFullScreen)
+                    element.mozRequestFullScreen();
+                else if (element.webkitRequestFullscreen)
+                    element.webkitRequestFullscreen();
+            }
+
+            function isFullScreen() {
+                return (document.fullScreenElement && document.fullScreenElement !== null)
+                     || document.mozFullScreen
+                     || document.webkitIsFullScreen;
+            }
 
             function toggleMute() {
                 game.mute();

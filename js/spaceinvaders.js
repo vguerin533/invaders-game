@@ -69,7 +69,7 @@ function Game() {
 }
 
 //  Initialis the Game with a canvas.
-Game.prototype.initialise = function(gameCanvas) {
+Game.prototype.initialise = function(gameCanvas, isMobile) {
 
     //  Set the game canvas.
     this.gameCanvas = gameCanvas;
@@ -77,14 +77,24 @@ Game.prototype.initialise = function(gameCanvas) {
     //  Set the game width and height.
     this.width = gameCanvas.width;
     this.height = gameCanvas.height;
-
-    //  Set the state game bounds.
-    this.gameBounds = {
-        left: gameCanvas.width / 2 - this.config.gameWidth / 2,
-        right: gameCanvas.width / 2 + this.config.gameWidth / 2,
-        top: gameCanvas.height / 2 - this.config.gameHeight / 2,
-        bottom: gameCanvas.height / 2 + this.config.gameHeight / 2,
-    };
+    
+    if(isMobile) {
+        //  Set the state game bounds.
+        this.gameBounds = {
+            left: gameCanvas.width / 2 - gameCanvas.width / 2 + 10,
+            right: gameCanvas.width / 2 + gameCanvas.width / 2 - 10,
+            top: gameCanvas.height / 2 - gameCanvas.height / 2 + 20,
+            bottom: gameCanvas.height / 2 + gameCanvas.height / 2 - 20,
+        };   
+    } else {
+        //  Set the state game bounds.
+        this.gameBounds = {
+            left: gameCanvas.width / 2 - this.config.gameWidth / 2,
+            right: gameCanvas.width / 2 + this.config.gameWidth / 2,
+            top: gameCanvas.height / 2 - this.config.gameHeight / 2,
+            bottom: gameCanvas.height / 2 + this.config.gameHeight / 2,
+        };
+    }
 };
 
 Game.prototype.displayLogo = function(ctx) {
