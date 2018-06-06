@@ -1,0 +1,6 @@
+{
+  "short_name": "Egg invaders",
+  "name": "Egg invaders Application",
+  "display": "standalone",
+  "orientation": "landscape"
+}

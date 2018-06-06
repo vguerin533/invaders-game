@@ -735,7 +735,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     }
 
     //  Draw info.
-    let textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) + 14/2;
+    let textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) - 14/2;
     ctx.font="14px Arial";
     ctx.fillStyle = '#ffffff';
     let info = "Lives: " + game.lives + ", Bonus: " + game.bonusesCaught;

@@ -5,6 +5,7 @@
         <link rel="stylesheet" type="text/css" href="css/core.css">
         <link rel="stylesheet" type="text/css" href="css/typeography.css">
         <link rel="stylesheet" type="text/css" href="css/laser.css">
+        <link rel="manifest" href="manifest.json">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <style>
     
@@ -27,8 +28,6 @@
             }
             #warning-message { display: none; }
             @media only screen and (orientation:portrait){
-                .hidePortrait { display:none; }
-                #warning-message { display:block; }
             }
             @media only screen and (orientation:landscape){
                 #warning-message { display:none; }
@@ -60,6 +59,7 @@
         <script src="js/laser.js"></script>
         <script>
             screen.orientation.lock('landscape');
+            window.scrollTo(0,1);
             //window.screen.lockOrientation('landscape');
             //  Create the starfield.
             var container = document.getElementById('starfield');
