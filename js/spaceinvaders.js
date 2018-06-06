@@ -77,15 +77,13 @@ Game.prototype.initialise = function(gameCanvas) {
     //  Set the game width and height.
     this.width = gameCanvas.width;
     this.height = gameCanvas.height;
-    let test = Math.min(gameCanvas.width / 2 + 10, this.config.gameWidth / 2);
-    let test2 = Math.min(gameCanvas.height / 2 + 20, this.config.gameHeight / 2)
     
     //  Set the state game bounds.
     this.gameBounds = {
         left: gameCanvas.width / 2 - Math.min(gameCanvas.width / 2 - 25, this.config.gameWidth / 2),
         right: gameCanvas.width / 2 + Math.min(gameCanvas.width / 2 - 25, this.config.gameWidth / 2),
-        top: gameCanvas.height / 2 - Math.min(gameCanvas.height / 2 - 20, this.config.gameHeight / 2),
-        bottom: gameCanvas.height / 2 + Math.min(gameCanvas.height / 2 - 20, this.config.gameHeight / 2),
+        top: gameCanvas.height / 2 - Math.min(gameCanvas.height / 2 - 10, this.config.gameHeight / 2),
+        bottom: gameCanvas.height / 2 + Math.min(gameCanvas.height / 2 - 10, this.config.gameHeight / 2),
     };
 };
 
@@ -774,22 +772,22 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 
 PlayState.prototype.handleStart = function(game, e) {
     if (e.targetTouches.length == 1) {
-        let millis = Date.now() - this.lastTouchTime;
-        this.lastTouchTime = Date.now();
-        console.log(millis);
-
-        // Double tap touch event
-        if (millis < 600) {
-            this.fireRocket();
-            this.fired = true;
-        } else {
-            this.touchFired = e.targetTouches.item(0);
-            this.fired = false;
-        }
+        this.touchFired = e.targetTouches.item(0);
     }
 }
 
 PlayState.prototype.handleEnd = function(game, e) {
+    let millis = Date.now() - this.lastTouchTime;
+    this.lastTouchTime = Date.now();
+
+    // Double tap touch event
+    if (millis < 600) {
+        this.fireRocket();
+        this.fired = true;
+    } else {
+        this.fired = false;
+    }
+
     if (e.targetTouches.length == 0) {
         this.touchFired = null;
     }
