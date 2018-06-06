@@ -758,9 +758,10 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 PlayState.prototype.handleStart = function(game, e) {
     if (e.touches.length == 1) {
         let millis = Date.now() - this.lastTouchTime;
+        console.log(millis);
 
         // Double tap touch event
-        if (millis < 1000) {
+        if (millis < 100000) {
             this.fireRocket();
         } else {
             this.touchFired = e.touches.item(0);
