@@ -5,7 +5,6 @@
         <link rel="stylesheet" type="text/css" href="css/core.css">
         <link rel="stylesheet" type="text/css" href="css/typeography.css">
         <link rel="stylesheet" type="text/css" href="css/laser.css">
-        <link rel="manifest" href="manifest.json">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <style>
     
@@ -84,13 +83,12 @@
                 if( $('#checkIsMobile').css('display')=='none') {
                     isMobile = true;
                 }
+                //  Initialise it with the game canvas.
+                game.initialise(canvas, isMobile);
+
+                //  Start the game.
+                game.start();
             });
-
-            //  Initialise it with the game canvas.
-            game.initialise(canvas, isMobile);
-
-            //  Start the game.
-            game.start();
 
             //  Listen for keyboard events.
             window.addEventListener("keydown", function keydown(e) {
