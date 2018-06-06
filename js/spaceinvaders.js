@@ -69,7 +69,7 @@ function Game() {
 }
 
 //  Initialis the Game with a canvas.
-Game.prototype.initialise = function(gameCanvas, isMobile) {
+Game.prototype.initialise = function(gameCanvas) {
 
     //  Set the game canvas.
     this.gameCanvas = gameCanvas;
@@ -77,24 +77,16 @@ Game.prototype.initialise = function(gameCanvas, isMobile) {
     //  Set the game width and height.
     this.width = gameCanvas.width;
     this.height = gameCanvas.height;
+    let test = Math.min(gameCanvas.width / 2 + 10, this.config.gameWidth / 2);
+    let test2 = Math.min(gameCanvas.height / 2 + 20, this.config.gameHeight / 2)
     
-    if(isMobile) {
-        //  Set the state game bounds.
-        this.gameBounds = {
-            left: gameCanvas.width / 2 - gameCanvas.width / 2 + 10,
-            right: gameCanvas.width / 2 + gameCanvas.width / 2 - 10,
-            top: gameCanvas.height / 2 - gameCanvas.height / 2 + 20,
-            bottom: gameCanvas.height / 2 + gameCanvas.height / 2 - 20,
-        };   
-    } else {
-        //  Set the state game bounds.
-        this.gameBounds = {
-            left: gameCanvas.width / 2 - this.config.gameWidth / 2,
-            right: gameCanvas.width / 2 + this.config.gameWidth / 2,
-            top: gameCanvas.height / 2 - this.config.gameHeight / 2,
-            bottom: gameCanvas.height / 2 + this.config.gameHeight / 2,
-        };
-    }
+    //  Set the state game bounds.
+    this.gameBounds = {
+        left: gameCanvas.width / 2 - Math.min(gameCanvas.width / 2 - 25, this.config.gameWidth / 2),
+        right: gameCanvas.width / 2 + Math.min(gameCanvas.width / 2 - 25, this.config.gameWidth / 2),
+        top: gameCanvas.height / 2 - Math.min(gameCanvas.height / 2 - 20, this.config.gameHeight / 2),
+        bottom: gameCanvas.height / 2 + Math.min(gameCanvas.height / 2 - 20, this.config.gameHeight / 2),
+    };
 };
 
 Game.prototype.displayLogo = function(ctx) {
@@ -404,6 +396,7 @@ function PlayState(config, level) {
     this.fpsBird = 10;
     this.lastTouchTime = Date.now();
     this.touchFired = null;
+    this.fired = false;
 }
 
 PlayState.prototype.enter = function(game) {
@@ -456,7 +449,7 @@ PlayState.prototype.update = function(game, dt) {
         this.ship.x += this.shipSpeed * dt;
     }
 
-    if(this.touchFired) {
+    if(this.touchFired && !this.fired) {
         if (this.touchFired.clientX > this.ship.x) {
             this.ship.x += this.shipSpeed * dt;
         } else {
@@ -788,8 +781,10 @@ PlayState.prototype.handleStart = function(game, e) {
         // Double tap touch event
         if (millis < 600) {
             this.fireRocket();
+            this.fired = true;
         } else {
             this.touchFired = e.targetTouches.item(0);
+            this.fired = false;
         }
     }
 }
