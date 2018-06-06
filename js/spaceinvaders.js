@@ -215,9 +215,16 @@ Game.prototype.keyUp = function(keyCode) {
     }
 };
 
+Game.prototype.handleStart = function(e) {
+    if(this.currentState() && this.currentState().handleStart) {
+        this.currentState().handleStart(this, e);
+    }
+};
+
+
 function DisplayState() {
 
-}
+};
 
 DisplayState.prototype.enter = function(game) {
     let ctx = game.gameCanvas.getContext("2d");
@@ -228,9 +235,10 @@ DisplayState.prototype.enter = function(game) {
     this.text = new Text({
         copy: 'Dataiku presents : Egg Invaders',
         x: game.width*0.2,
-        y: game.height*0.2
+        y: game.height*0.2,
+        size: game.width*0.05
     }, ctx, this.laser, this.particles);
-}
+};
 
 DisplayState.prototype.update = function(game, dt) {
     const done = this.text.update();
@@ -239,23 +247,21 @@ DisplayState.prototype.update = function(game, dt) {
     }
     this.laser.forEach((l, i) => l.update(i, this.laser));
     this.particles.forEach(p => p.update());
-}
+};
 
 DisplayState.prototype.draw = function(game, dt, ctx) {
-    ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 0.9;
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, game.width, game.height);
     //
-    ctx.globalCompositeOperation = 'screen';
     this.text.render(ctx);
     this.laser.forEach(l => l.render(ctx));
     this.particles.forEach(p => p.render(ctx));
-}
+};
 
 function WelcomeState() {
 
-}
+};
 
 WelcomeState.prototype.enter = function(game) {
 
@@ -286,19 +292,26 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
     ctx.fillText("Egg Invaders", game.width / 2, game.height/2 - 40); 
     ctx.font="16px Arial";
 
-    ctx.fillText("Press 'Space' to start.", game.width / 2, game.height/2); 
+    ctx.fillText("Press 'Space' or touch screen to start.", game.width / 2, game.height/2); 
 };
 
 WelcomeState.prototype.keyDown = function(game, keyCode) {
     if(keyCode == 32) /*space*/ {
-        //  Space starts the game.
-        game.level = 1;
-        game.score = 0;
-        game.lives = 3;
-        game.bonusesCaught = 0;
-        game.moveToState(new LevelIntroState(game.level));
+        this.startGame(game);
     }
 };
+
+WelcomeState.prototype.handleStart = function(game, e) {
+    this.startGame(game);
+};
+
+WelcomeState.prototype.startGame = function(game) {
+    game.level = 1;
+    game.score = 0;
+    game.lives = 3;
+    game.bonusesCaught = 0;
+    game.moveToState(new LevelIntroState(game.level));
+}
 
 function GameOverState() {
 
@@ -323,19 +336,26 @@ GameOverState.prototype.draw = function(game, dt, ctx) {
     ctx.font="16px Arial";
     ctx.fillText("You scored " + game.score + " and got to level " + game.level, game.width / 2, game.height/2);
     ctx.font="16px Arial";
-    ctx.fillText("Press 'Space' to play again.", game.width / 2, game.height/2 + 40);   
+    ctx.fillText("Press 'Space' or touch screen to play again.", game.width / 2, game.height/2 + 40);   
 };
 
 GameOverState.prototype.keyDown = function(game, keyCode) {
     if(keyCode == 32) /*space*/ {
-        //  Space restarts the game.
-        game.lives = 3;
-        game.bonusesCaught = 0;
-        game.score = 0;
-        game.level = 1;
-        game.moveToState(new LevelIntroState(1));
+        this.restartGame(game);
     }
 };
+
+WelcomeState.prototype.handleStart = function(game, e) {
+    this.restartGame(game);
+};
+
+GameOverState.prototype.restartGame = function(game) {
+    game.level = 1;
+    game.score = 0;
+    game.lives = 3;
+    game.bonusesCaught = 0;
+    game.moveToState(new LevelIntroState(game.level));
+}
 
 //  Create a PlayState with the game config and the level you are on.
 function PlayState(config, level) {
@@ -357,6 +377,8 @@ function PlayState(config, level) {
     this.bonuses = [];
 
     this.fpsBird = 10;
+    this.lastTouchTime = Date.now();
+    this.touchFired = null;
 }
 
 PlayState.prototype.enter = function(game) {
@@ -408,8 +430,13 @@ PlayState.prototype.update = function(game, dt) {
     if(game.pressedKeys[39]) {
         this.ship.x += this.shipSpeed * dt;
     }
-    if(game.pressedKeys[32]) {
-        this.fireRocket();
+
+    if(this.touchFired) {
+        if (this.touchFired.clientX > this.ship.x) {
+            this.ship.x += this.shipSpeed * dt;
+        } else {
+            this.ship.x -= this.shipSpeed * dt;
+        }
     }
 
     //  Keep the ship in bounds.
@@ -714,7 +741,6 @@ PlayState.prototype.draw = function(game, dt, ctx) {
 };
 
 PlayState.prototype.keyDown = function(game, keyCode) {
-
     if(keyCode == 32) {
         //  Fire!
         this.fireRocket();
@@ -728,9 +754,18 @@ PlayState.prototype.keyDown = function(game, keyCode) {
     }
 };
 
-PlayState.prototype.keyUp = function(game, keyCode) {
+PlayState.prototype.handleStart = function(game, e) {
+    if (e.touches.length == 1) {
+        let millis = Date.now() - this.lastTouchTime;
 
-};
+        // Double tap touch event
+        if (millis < 1000) {
+            this.fireRocket();
+        } else {
+            this.touchFired = e.touches.item(0);
+        }
+    }
+}
 
 PlayState.prototype.fireRocket = function() {
     //  If we have no last rocket time, or the last rocket time 

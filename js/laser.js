@@ -103,6 +103,7 @@ function Text(options, ctx, laser, particles) {
     ctx.strokeStyle = this.color;
     ctx.strokeText(this.copy, 0, this.bound.height * 0.8);
     this.data = ctx.getImageData(0, 0, this.bound.width, this.bound.height);
+    ctx.clearRect(0 ,0 , this.bound.width, this.bound.height);
     this.index = 0;
 
     this.update = function() {
@@ -131,29 +132,4 @@ function Text(options, ctx, laser, particles) {
     this.render = function(ctx) {
         ctx.putImageData(this.data, this.x, this.y, 0, 0, this.index, this.bound.height);
     }
-}
-
-function loop() {
-    update();
-    render();
-    requestAnimationFrame(loop);
-}
-
-function update() {
-    text.update();
-    laser.forEach((l, i) => l.update(i, laser));
-    particles.forEach(p => p.update());
-    value.update();
-}
-
-function render() {
-    ctx.globalCompositeOperation = 'source-over';
-    ctx.globalAlpha = 0.9;
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, w, h);
-    //
-    ctx.globalCompositeOperation = 'screen';
-    text.render(ctx);
-    laser.forEach(l => l.render(ctx));
-    particles.forEach(p => p.render(ctx));
 }
