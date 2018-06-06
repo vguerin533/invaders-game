@@ -84,9 +84,10 @@
                 game.keyUp(keycode);
             });
 
-            window.addEventListener("touchstart", function(e) {
+            canvas.addEventListener("touchstart", function(e) {
                 game.handleStart(e);
             });
+            /*
             canvas.addEventListener("touchend", function(e) {
                 game.handleEnd(e);
             });
@@ -95,7 +96,7 @@
             });
             canvas.addEventListener("touchmove", function(e) {
                 game.handleMove(e);
-            });
+            });*/
 
             function toggleMute() {
                 game.mute();

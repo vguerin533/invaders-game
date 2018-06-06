@@ -346,7 +346,7 @@ GameOverState.prototype.keyDown = function(game, keyCode) {
     }
 };
 
-WelcomeState.prototype.handleStart = function(game, e) {
+GameOverState.prototype.handleStart = function(game, e) {
     this.restartGame(game);
 };
 
