@@ -247,7 +247,8 @@ DisplayState.prototype.enter = function(game) {
     this.particles = [];
     //
     this.text = new Text({
-        copy: 'Dataiku presents : Egg Invaders',
+        //ataiku presents : Egg Invaders
+        copy: 'D',
         x: game.width*0.2,
         y: game.height*0.2,
         size: game.width*0.05

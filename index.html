@@ -21,10 +21,6 @@
                 z-index: -1;
                 position: absolute;
             }
-            #gamecanvas { 
-                width: 100%;
-                height: 100%;
-            }
             #info {
                 width: 100%;
                 z-index: 1;
@@ -36,12 +32,16 @@
             }
             @media only screen and (orientation:landscape){
                 #warning-message { display:none; }
+                #gamecanvas { 
+                    width: 100%;
+                    height: 80%;
+                }
             }
         </style>
     </head>
     <body>
         <div id="warning-message">
-            This website is only viewable in landscape mode
+            Go swap in landscape mode
         </div>
         <div id="starfield" class="hidePortrait"></div>
         <canvas id="gameCanvas" class="hidePortrait"></canvas>
@@ -59,7 +59,8 @@
         <script src="js/spaceinvaders.js"></script>
         <script src="js/laser.js"></script>
         <script>
-
+            screen.orientation.lock('landscape');
+            //window.screen.lockOrientation('landscape');
             //  Create the starfield.
             var container = document.getElementById('starfield');
             var starfield = new Starfield();
