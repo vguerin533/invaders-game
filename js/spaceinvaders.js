@@ -817,11 +817,11 @@ PlayState.prototype.handleStart = function(game, e) {
     if (e.targetTouches.length == 1) {
         let touch = e.targetTouches.item(0);
 
-        if (touch.clientX > game.gameBounds.left && touch.clientX < game.gameBounds.left + game.width*0.3
-            && touch.clientY > this.textYpos && touch.clientY < this.textYpos + game.height*0.08) {
+        if (touch.pageX > game.gameBounds.left && touch.pageX < game.gameBounds.left + game.width*0.3
+            && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.fireRocket();
-        } else if (touch.clientX > game.gameBounds.right - game.width*0.3 && touch.clientX < game.gameBounds.right 
-            && touch.clientY > this.textYpos && touch.clientY < this.textYpos + game.height*0.08) {
+        } else if (touch.pageX > game.gameBounds.right - game.width*0.3 && touch.pageX < game.gameBounds.right 
+            && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.activateBonus(game);
         } else {
             this.touchFired = e.targetTouches.item(0);
