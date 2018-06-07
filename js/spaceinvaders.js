@@ -449,7 +449,7 @@ PlayState.prototype.update = function(game, dt) {
     }
 
     if(this.touchFired) {
-        if (this.touchFired.clientX > this.ship.x) {
+        if (this.touchFired.screenX > this.ship.x) {
             this.ship.x += this.shipSpeed * dt;
         } else {
             this.ship.x -= this.shipSpeed * dt;
@@ -821,11 +821,11 @@ PlayState.prototype.handleStart = function(game, e) {
     */
         let touch = e.targetTouches.item(0);
 
-        if (touch.clientX > game.gameBounds.left && touch.clientX < game.gameBounds.left + game.width*0.1
-            && touch.clientY > textYpos && touch.clientY < textYpos + game.height*0.1) {
+        if (touch.screenX > game.gameBounds.left && touch.screenX < game.gameBounds.left + game.width*0.1
+            && touch.screenY > textYpos && touch.screenY < textYpos + game.height*0.1) {
             this.fireRocket();
-        } else if (touch.clientX > game.gameBounds.right - game.width*0.1 && touch.clientX < game.gameBounds.right 
-            && touch.clientY > textYpos && touch.clientY < textYpos + game.height*0.1) {
+        } else if (touch.screenX > game.gameBounds.right - game.width*0.1 && touch.screenX < game.gameBounds.right 
+            && touch.screenY > textYpos && touch.screenY < textYpos + game.height*0.1) {
             this.activateBonus(game);
         } else {
             this.touchFired = e.targetTouches.item(0);
