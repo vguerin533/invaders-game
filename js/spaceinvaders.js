@@ -77,6 +77,10 @@ Game.prototype.initialise = function(gameCanvas) {
     //  Set the game width and height.
     this.width = gameCanvas.width;
     this.height = gameCanvas.height;
+
+    if (Math.min(gameCanvas.width / 2 - 25, this.config.gameWidth / 2) == gameCanvas.width / 2 - 25) {
+        this.isMobile = true;
+    }
     
     //  Set the state game bounds.
     this.gameBounds = {
@@ -247,8 +251,7 @@ DisplayState.prototype.enter = function(game) {
     this.particles = [];
     //
     this.text = new Text({
-        //ataiku presents : Egg Invaders
-        copy: 'D',
+        copy: 'Dataiku presents : Egg Invaders',
         x: game.width*0.2,
         y: game.height*0.2,
         size: game.width*0.05
@@ -392,9 +395,7 @@ function PlayState(config, level) {
     this.bonuses = [];
 
     this.fpsBird = 10;
-    this.lastTouchTime = Date.now();
     this.touchFired = null;
-    this.fired = false;
 }
 
 PlayState.prototype.enter = function(game) {
@@ -447,7 +448,7 @@ PlayState.prototype.update = function(game, dt) {
         this.ship.x += this.shipSpeed * dt;
     }
 
-    if(this.touchFired && !this.fired) {
+    if(this.touchFired) {
         if (this.touchFired.clientX > this.ship.x) {
             this.ship.x += this.shipSpeed * dt;
         } else {
@@ -746,6 +747,22 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.textAlign = "right";
     ctx.fillText(info, game.gameBounds.right, textYpos);
 
+    if (game.isMobile) {
+        textYpos += 14;
+        ctx.globalAlpha=1.0;
+        ctx.fillStyle = '#ecc77e';
+        roundRect(ctx, game.gameBounds.left, textYpos, game.width*0.3, game.height*0.08, 10, true);
+        roundRect(ctx, game.gameBounds.right - game.width*0.3,textYpos,game.width*0.3,game.height*0.08, 10, true);
+        ctx.fill();
+        let shoot = 'Shoot';
+        let data = 'Use data';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign="center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(shoot, game.gameBounds.left+game.width*0.3/2, textYpos+game.height*0.08/2);
+        ctx.fillText(data, game.gameBounds.right - game.width*0.3/2, textYpos+game.height*0.08/2);   
+    }
+
     //  If we're in debug mode, draw bounds.
     if(this.config.debugMode) {
         ctx.strokeStyle = '#ff0000';
@@ -755,6 +772,32 @@ PlayState.prototype.draw = function(game, dt, ctx) {
             game.gameBounds.bottom - game.gameBounds.top);
     }
 };
+
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof stroke == "undefined" ) {
+    stroke = true;
+  }
+  if (typeof radius === "undefined") {
+    radius = 5;
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  if (stroke) {
+    ctx.stroke();
+  }
+  if (fill) {
+    ctx.fill();
+  }        
+}
 
 PlayState.prototype.keyDown = function(game, keyCode) {
     if(keyCode == 32) {
@@ -772,22 +815,25 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 
 PlayState.prototype.handleStart = function(game, e) {
     if (e.targetTouches.length == 1) {
-        this.touchFired = e.targetTouches.item(0);
+        /*
+            roundRect(ctx, game.gameBounds.left, textYpos, game.width*0.1, game.height*0.1, 10, true);
+    roundRect(ctx, game.gameBounds.right - game.width*0.1,textYpos,game.width*0.1,game.height*0.1, 10, true);
+    */
+        let touch = e.targetTouches.item(0);
+
+        if (touch.clientX > game.gameBounds.left && touch.clientX < game.gameBounds.left + game.width*0.1
+            && touch.clientY > textYpos && touch.clientY < textYpos + game.height*0.1) {
+            this.fireRocket();
+        } else if (touch.clientX > game.gameBounds.right - game.width*0.1 && touch.clientX < game.gameBounds.right 
+            && touch.clientY > textYpos && touch.clientY < textYpos + game.height*0.1) {
+            this.activateBonus(game);
+        } else {
+            this.touchFired = e.targetTouches.item(0);
+        }
     }
 }
 
 PlayState.prototype.handleEnd = function(game, e) {
-    let millis = Date.now() - this.lastTouchTime;
-    this.lastTouchTime = Date.now();
-
-    // Double tap touch event
-    if (millis < 600) {
-        this.fireRocket();
-        this.fired = true;
-    } else {
-        this.fired = false;
-    }
-
     if (e.targetTouches.length == 0) {
         this.touchFired = null;
     }

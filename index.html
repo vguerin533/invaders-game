@@ -29,18 +29,9 @@
                 width: 100%;
                 z-index: 1;
             }
-            #warning-message { display: none; }
-            @media only screen and (orientation:portrait){
-            }
-            @media only screen and (orientation:landscape){
-                #warning-message { display:none; }
-            }
         </style>
     </head>
     <body>
-        <div id="warning-message">
-            Go swap in landscape mode
-        </div>
         <div id="starfield" class="hidePortrait"></div>
         <canvas id="gameCanvas" class="hidePortrait"></canvas>
         <div id="info" class="hidePortrait">
@@ -72,15 +63,12 @@
 
             //  Create the game.
             var game = new Game();
+    
+            //  Initialise it with the game canvas.
+            game.initialise(canvas);
 
-            let initFullScreen = true;
-            $( document ).ready(function() {      
-                //  Initialise it with the game canvas.
-                game.initialise(canvas);
-
-                //  Start the game.
-                game.start();
-            });
+            //  Start the game.
+            game.start();
 
             //  Listen for keyboard events.
             window.addEventListener("keydown", function keydown(e) {
@@ -92,19 +80,11 @@
                 game.keyDown(keycode);
             });
             window.addEventListener("keyup", function keydown(e) {
-                if (!isFullScreen() && initFullScreen) {
-                    initFullScreen = false;
-                    requestFullScreen(document.documentElement);
-                }
                 var keycode = e.which || window.event.keycode;
                 game.keyUp(keycode);
             });
 
             canvas.addEventListener("touchstart", function(e) {
-                if (!isFullScreen() && initFullScreen) {
-                    initFullScreen = false;
-                    requestFullScreen(document.documentElement);
-                }
                 game.handleStart(e);
             });
             canvas.addEventListener("touchend", function(e) {
@@ -113,23 +93,6 @@
             canvas.addEventListener("touchmove", function(e) {
                 game.handleMove(e);
             });
-
-            function requestFullScreen(element) {
-                if (element.requestFullscreen)
-                    element.requestFullscreen();
-                else if (element.msRequestFullscreen)
-                    element.msRequestFullscreen();
-                else if (element.mozRequestFullScreen)
-                    element.mozRequestFullScreen();
-                else if (element.webkitRequestFullscreen)
-                    element.webkitRequestFullscreen();
-            }
-
-            function isFullScreen() {
-                return (document.fullScreenElement && document.fullScreenElement !== null)
-                     || document.mozFullScreen
-                     || document.webkitIsFullScreen;
-            }
 
             function toggleMute() {
                 game.mute();

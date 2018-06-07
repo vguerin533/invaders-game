@@ -96,7 +96,7 @@ function Text(options, ctx, laser, particles) {
     this.basedelay = this.delay;
     ctx.font = `${this.size}px Franklin Gothic Medium Condensed`;
     this.bound = ctx.measureText(this.copy);
-    this.bound.height = this.size * 1.1;
+    this.bound.height = this.size * 1.2;
     this.x = options.x || w * 0.5 - this.bound.width * 0.5;
     this.y = options.y || h * 0.5 - this.size * 0.5;
 
