@@ -748,19 +748,19 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     ctx.fillText(info, game.gameBounds.right, textYpos);
 
     if (game.isMobile) {
-        textYpos += 14;
+        this.textYpos =  textYpos + 14;
         ctx.globalAlpha=1.0;
         ctx.fillStyle = '#ecc77e';
-        roundRect(ctx, game.gameBounds.left, textYpos, game.width*0.3, game.height*0.08, 10, true);
-        roundRect(ctx, game.gameBounds.right - game.width*0.3,textYpos,game.width*0.3,game.height*0.08, 10, true);
+        roundRect(ctx, game.gameBounds.left, this.textYpos, game.width*0.3, game.height*0.08, 10, true);
+        roundRect(ctx, game.gameBounds.right - game.width*0.3,this.textYpos,game.width*0.3,game.height*0.08, 10, true);
         ctx.fill();
         let shoot = 'Shoot';
         let data = 'Use data';
         ctx.fillStyle = '#ffffff';
         ctx.textAlign="center";
         ctx.textBaseline = "middle";
-        ctx.fillText(shoot, game.gameBounds.left+game.width*0.3/2, textYpos+game.height*0.08/2);
-        ctx.fillText(data, game.gameBounds.right - game.width*0.3/2, textYpos+game.height*0.08/2);   
+        ctx.fillText(shoot, game.gameBounds.left+game.width*0.3/2, this.textYpos+game.height*0.08/2);
+        ctx.fillText(data, game.gameBounds.right - game.width*0.3/2, this.textYpos+game.height*0.08/2);   
     }
 
     //  If we're in debug mode, draw bounds.
@@ -815,17 +815,13 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 
 PlayState.prototype.handleStart = function(game, e) {
     if (e.targetTouches.length == 1) {
-        /*
-            roundRect(ctx, game.gameBounds.left, textYpos, game.width*0.1, game.height*0.1, 10, true);
-    roundRect(ctx, game.gameBounds.right - game.width*0.1,textYpos,game.width*0.1,game.height*0.1, 10, true);
-    */
         let touch = e.targetTouches.item(0);
 
-        if (touch.screenX > game.gameBounds.left && touch.screenX < game.gameBounds.left + game.width*0.1
-            && touch.screenY > textYpos && touch.screenY < textYpos + game.height*0.1) {
+        if (touch.screenX > game.gameBounds.left && touch.screenX < game.gameBounds.left + game.width*0.3
+            && touch.screenY > this.textYpos && touch.screenY < this.textYpos + game.height*0.08) {
             this.fireRocket();
-        } else if (touch.screenX > game.gameBounds.right - game.width*0.1 && touch.screenX < game.gameBounds.right 
-            && touch.screenY > textYpos && touch.screenY < textYpos + game.height*0.1) {
+        } else if (touch.screenX > game.gameBounds.right - game.width*0.3 && touch.screenX < game.gameBounds.right 
+            && touch.screenY > this.textYpos && touch.screenY < this.textYpos + game.height*0.08) {
             this.activateBonus(game);
         } else {
             this.touchFired = e.targetTouches.item(0);
