@@ -250,14 +250,14 @@ DisplayState.prototype.enter = function(game) {
     this.laser = [];
     this.particles = [];
     this.timeout = false;
-    this.lineHeight = game.width /50;
+    this.lineHeight = game.width/40;
     this.fps = 0;
     this.displayTextIterations = 0;
     //
     this.text = new Text({
         copy: 'Dataiku presents : Egg Invaders',
         x: game.width*0.15,
-        y: game.height*0.3,
+        y: game.height*0.1,
         size: game.width*0.05
     }, ctx, this.laser, this.particles);
 };
@@ -282,13 +282,18 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
     this.particles.forEach(p => p.render(ctx));
     if (this.done == "done") {
 
-        let data = ['A long time ago, in a galaxy far far away, Eggs decided to invade Planet Technoslavia.',
-                    'No single power has ever emerged victorious across all of Technoslavia ...',
-                     'Will you let it happen now?',
-                     'Fight against the Invaders!',
-                     'You have been equipped with a laser cannon that you can move horizontally to fire at descending Eggs.',
-                     'Your aim is to defeat the rows of Eggs before they advance toward the bottom of the screen.',
-                     'But be careful - the more Eggs you defeat, the faster and more powerful they become.'];
+        let data = ['A long time ago, in a galaxy far far away,',
+                    ' Eggs decided to invade Planet Technoslavia.',
+                    'No single power has ever emerged victorious',
+                    'across all of Technoslavia ...',
+                    'Will you let it happen now?',
+                    'Fight against the Invaders!',
+                    'You have been equipped with a laser cannon ',
+                    'that you can move horizontally to fire at descending Eggs.',
+                    'Your aim is to defeat the rows of Eggs',
+                    'before they advance toward the bottom of the screen.',
+                    'But be careful - the more Eggs you defeat,',
+                    'the faster and more powerful they become.'];
 
 
         ctx.textAlign = "center";
@@ -298,7 +303,7 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
 
         if (Math.trunc(this.fps / game.config.fps) < data.length) {
             for (let i = 0; i < data.length && i <= this.displayTextIterations; i++) {
-                ctx.fillText(data[i], game.width/2, game.height/2 + i *(this.lineHeight+5));
+                ctx.fillText(data[i], game.width/2, game.height/3 + i *(this.lineHeight+5));
             }
         }
 
@@ -850,15 +855,14 @@ PlayState.prototype.keyDown = function(game, keyCode) {
 PlayState.prototype.handleStart = function(game, e) {
     if (e.targetTouches.length == 1) {
         let touch = e.targetTouches.item(0);
+        this.touchFired = null;
 
         if (touch.pageX > game.gameBounds.left && touch.pageX < game.gameBounds.left + game.width*0.3
             && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.fireRocket();
-            this.touchFired = null;
         } else if (touch.pageX > game.gameBounds.right - game.width*0.3 && touch.pageX < game.gameBounds.right 
             && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.activateBonus(game);
-            this.touchFired = null;
         } else {
             this.touchFired = e.targetTouches.item(0);
         }
