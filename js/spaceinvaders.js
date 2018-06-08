@@ -249,19 +249,24 @@ DisplayState.prototype.enter = function(game) {
 
     this.laser = [];
     this.particles = [];
+    this.timeout = false;
+    this.lineHeight = game.width /50;
+    this.fps = 0;
+    this.displayTextIterations = 0;
     //
     this.text = new Text({
         copy: 'Dataiku presents : Egg Invaders',
-        x: game.width*0.2,
-        y: game.height*0.2,
+        x: game.width*0.15,
+        y: game.height*0.3,
         size: game.width*0.05
     }, ctx, this.laser, this.particles);
 };
 
 DisplayState.prototype.update = function(game, dt) {
-    const done = this.text.update();
-    if (done == "done") {
-        game.moveToState(new WelcomeState());
+    this.done = this.text.update();
+    if (this.done == "done" && !this.timeout) {
+        window.setTimeout(function(){ game.moveToState(new WelcomeState()); }, 25000);
+        this.timeout = true;
     }
     this.laser.forEach((l, i) => l.update(i, this.laser));
     this.particles.forEach(p => p.update());
@@ -275,6 +280,35 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
     this.text.render(ctx);
     this.laser.forEach(l => l.render(ctx));
     this.particles.forEach(p => p.render(ctx));
+    if (this.done == "done") {
+
+        let data = ['A long time ago, in a galaxy far far away, Eggs decided to invade Planet Technoslavia.',
+                    'No single power has ever emerged victorious across all of Technoslavia ...',
+                     'Will you let it happen now?',
+                     'Fight against the Invaders!',
+                     'You have been equipped with a laser cannon that you can move horizontally to fire at descending Eggs.',
+                     'Your aim is to defeat the rows of Eggs before they advance toward the bottom of the screen.',
+                     'But be careful - the more Eggs you defeat, the faster and more powerful they become.'];
+
+
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = this.lineHeight+"px Franklin Gothic Medium Condensed";
+        ctx.fillStyle = '#feda4a';
+
+        if (Math.trunc(this.fps / game.config.fps) < data.length) {
+            for (let i = 0; i < data.length && i <= this.displayTextIterations; i++) {
+                ctx.fillText(data[i], game.width/2, game.height/2 + i *(this.lineHeight+5));
+            }
+        }
+
+        this.fps++;
+
+        if (this.fps == data[this.displayTextIterations].length * 2) {
+            this.fps = 0;
+            this.displayTextIterations++;
+        }
+    }
 };
 
 function WelcomeState() {
@@ -820,9 +854,11 @@ PlayState.prototype.handleStart = function(game, e) {
         if (touch.pageX > game.gameBounds.left && touch.pageX < game.gameBounds.left + game.width*0.3
             && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.fireRocket();
+            this.touchFired = null;
         } else if (touch.pageX > game.gameBounds.right - game.width*0.3 && touch.pageX < game.gameBounds.right 
             && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.activateBonus(game);
+            this.touchFired = null;
         } else {
             this.touchFired = e.targetTouches.item(0);
         }

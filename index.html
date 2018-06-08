@@ -29,12 +29,23 @@
                 width: 100%;
                 z-index: 1;
             }
+            #warning-message { display: none; }
+            @media only screen and (orientation:landscape){
+                #starfield { display:none; }
+                #warning-message { display:block; }
+            }
+            @media only screen and (orientation:portrait){
+                #warning-message { display:none; }
+            }
         </style>
     </head>
     <body>
-        <div id="starfield" class="hidePortrait"></div>
-        <canvas id="gameCanvas" class="hidePortrait"></canvas>
-        <div id="info" class="hidePortrait">
+        <div id="warning-message">
+            This website is only viewable in landscape mode
+        </div>
+        <div id="starfield"></div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="info">
             <p>Move with arrow keys, fire with the space bar. The invaders get faster and drop
                 more bombs as you complete each level!</p>
             <p><a id="muteLink" href="#" onclick="toggleMute()">mute</a> | 
