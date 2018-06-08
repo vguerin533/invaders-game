@@ -257,7 +257,7 @@ DisplayState.prototype.enter = function(game) {
     this.text = new Text({
         copy: 'Dataiku presents : Egg Invaders',
         x: game.width*0.15,
-        y: game.height*0.1,
+        y: game.height*0.05,
         size: game.width*0.05
     }, ctx, this.laser, this.particles);
 };
@@ -303,7 +303,7 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
 
         if (Math.trunc(this.fps / game.config.fps) < data.length) {
             for (let i = 0; i < data.length && i <= this.displayTextIterations; i++) {
-                ctx.fillText(data[i], game.width/2, game.height/3 + i *(this.lineHeight+5));
+                ctx.fillText(data[i], game.width/2, game.height * 0.18 + i *(this.lineHeight+10));
             }
         }
 
@@ -344,14 +344,17 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
 
     game.displayLogo(ctx);
 
-    ctx.font="30px Arial";
+    ctx.font="30px Franklin Gothic Medium Condensed";
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="center"; 
     ctx.textAlign="center"; 
     ctx.fillText("Egg Invaders", game.width / 2, game.height/2 - 40); 
-    ctx.font="16px Arial";
+    ctx.font="16px Franklin Gothic Medium Condensed";
 
-    ctx.fillText("Press 'Space' or touch screen to start.", game.width / 2, game.height/2); 
+    ctx.fillText("Press 'Space' or touch screen to start.", game.width / 2, game.height/2);
+    if (window.innerWidth < 900) {
+        ctx.fillText("Place one finger on left or right side to move in the desired direciton", game.width / 2 + 20, game.height/2 + 20); 
+    }
 };
 
 WelcomeState.prototype.keyDown = function(game, keyCode) {
@@ -387,14 +390,14 @@ GameOverState.prototype.draw = function(game, dt, ctx) {
 
     game.displayLogo(ctx);
 
-    ctx.font="30px Arial";
+    ctx.font="30px Franklin Gothic Medium Condensed";
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="center"; 
     ctx.textAlign="center"; 
     ctx.fillText("Game Over!", game.width / 2, game.height/2 - 40); 
-    ctx.font="16px Arial";
+    ctx.font="16px Franklin Gothic Medium Condensed";
     ctx.fillText("You scored " + game.score + " and got to level " + game.level, game.width / 2, game.height/2);
-    ctx.font="16px Arial";
+    ctx.font="16px Franklin Gothic Medium Condensed";
     ctx.fillText("Press 'Space' or touch screen to play again.", game.width / 2, game.height/2 + 40);   
 };
 
@@ -779,7 +782,7 @@ PlayState.prototype.draw = function(game, dt, ctx) {
 
     //  Draw info.
     let textYpos = game.gameBounds.bottom + ((game.height - game.gameBounds.bottom) / 2) - 14/2;
-    ctx.font="14px Arial";
+    ctx.font="14px Franklin Gothic Medium Condensed";
     ctx.fillStyle = '#ffffff';
     let info = "Lives: " + game.lives + ", Bonus: " + game.bonusesCaught;
     ctx.textAlign = "left";
@@ -960,7 +963,7 @@ PauseState.prototype.draw = function(game, dt, ctx) {
 
     game.displayLogo(ctx);
 
-    ctx.font="14px Arial";
+    ctx.font="14px Franklin Gothic Medium Condensed";
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="middle";
     ctx.textAlign="center";
@@ -1007,12 +1010,12 @@ LevelIntroState.prototype.draw = function(game, dt, ctx) {
 
     game.displayLogo(ctx);
 
-    ctx.font="36px Arial";
+    ctx.font="36px Franklin Gothic Medium Condensed";
     ctx.fillStyle = '#ffffff';
     ctx.textBaseline="middle"; 
     ctx.textAlign="center"; 
     ctx.fillText("Level " + this.level, game.width / 2, game.height/2);
-    ctx.font="24px Arial";
+    ctx.font="24px Franklin Gothic Medium Condensed";
     ctx.fillText("Ready in " + this.countdownMessage, game.width / 2, game.height/2 + 36);      
     return;
 };
