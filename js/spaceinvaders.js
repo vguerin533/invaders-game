@@ -309,9 +309,11 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
 
         this.fps++;
 
-        if (this.fps == data[this.displayTextIterations].length * 2) {
-            this.fps = 0;
-            this.displayTextIterations++;
+        if (this.displayTextIterations < data.length) {
+            if (this.fps == data[this.displayTextIterations].length * 2) {
+                this.fps = 0;
+                this.displayTextIterations++;
+            }
         }
     }
 };
@@ -864,7 +866,7 @@ PlayState.prototype.handleStart = function(game, e) {
             && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
             this.activateBonus(game);
         } else {
-            this.touchFired = e.targetTouches.item(0);
+            this.touchFired = touch;
         }
     }
 }
@@ -877,7 +879,18 @@ PlayState.prototype.handleEnd = function(game, e) {
 
 PlayState.prototype.handleMove = function(game, e) {
     if (e.targetTouches.length == 1) {
-        this.touchFired = e.targetTouches.item(0);
+        let touch = e.targetTouches.item(0);
+        this.touchFired = null;
+
+        if (touch.pageX > game.gameBounds.left && touch.pageX < game.gameBounds.left + game.width*0.3
+            && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
+            this.fireRocket();
+        } else if (touch.pageX > game.gameBounds.right - game.width*0.3 && touch.pageX < game.gameBounds.right 
+            && touch.pageY > this.textYpos && touch.pageY < this.textYpos + game.height*0.08) {
+            this.activateBonus(game);
+        } else {
+            this.touchFired = touch;
+        }
     }
 }
 
