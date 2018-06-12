@@ -440,6 +440,10 @@ function PlayState(config, level) {
 
     this.fpsBird = 10;
     this.touchFired = null;
+    this.bossActivated = false;
+    if (this.level == 10) {
+        this.bossActivated = true;
+    }
 }
 
 PlayState.prototype.enter = function(game) {
@@ -465,14 +469,21 @@ PlayState.prototype.enter = function(game) {
     let ranks = this.config.invaderRanks;
     let files = this.config.invaderFiles;
     let invaders = [];
-    for(let rank = 0; rank < ranks; rank++){
-        for(let file = 0; file < files; file++) {
-            invaders.push(new Invader(
-                (game.width / 2) + ((files/2 - file) * 200 / files),
-                (game.gameBounds.top + rank * 26),
-                rank, file, 'Invader'));
+
+    if (!this.bossActivated) {
+        for(let rank = 0; rank < ranks; rank++){
+            for(let file = 0; file < files; file++) {
+                invaders.push(new Invader(
+                    (game.width / 2) + ((files/2 - file) * 200 / files),
+                    (game.gameBounds.top + rank * 26),
+                    rank, file));
+            }
         }
+    } else {
+        invaders.push(new InvaderBigBoss(game.width / 2, game.gameBounds.top));
     }
+
+
     this.invaders = invaders;
     this.invaderCurrentVelocity = this.invaderInitialVelocity;
     this.invaderVelocity = {x: -this.invaderInitialVelocity, y:0};
@@ -611,10 +622,18 @@ PlayState.prototype.update = function(game, dt) {
             }
         }
         if(bang) {
-            invader.iterations = 5;
-            this.invadersKilled.push(invader);
-            this.invaders.splice(i--, 1);
-            game.sounds.playSound('bang');
+            if (invader.hasOwnProperty('lives')) {
+                invader.lives--;
+                if (invader.lives == 0) {
+                    this.invaders.splice(i--, 1);
+                    game.sounds.playSound('bang');
+                }
+            } else {
+                invader.iterations = 5;
+                this.invadersKilled.push(invader);
+                this.invaders.splice(i--, 1);
+                game.sounds.playSound('bang');
+            }
         }
     }
 
@@ -687,9 +706,13 @@ PlayState.prototype.update = function(game, dt) {
 
     //  Check for victory
     if(this.invaders.length === 0) {
-        game.score += this.level * 50;
-        game.level += 1;
-        game.moveToState(new LevelIntroState(game.level));
+        if (game.level == 11) {
+            game.moveToState(new RedirectState(game.level));
+        } else {
+            game.score += this.level * 50;
+            game.level += 1;
+            game.moveToState(new LevelIntroState(game.level));
+        }
     }
 };
 
@@ -720,6 +743,9 @@ PlayState.prototype.getImage = function(name) {
         case 'bonus':
             image.src = "images/bonus.png";
             return image;
+        case 'invaderBigBoss':
+            image.src = "images/excel.png";
+            return image;
     }
 }
 
@@ -743,12 +769,26 @@ PlayState.prototype.draw = function(game, dt, ctx) {
     } else {
         this.fpsBird--;
     }
-    
+ 
+    //  Draw rockets.
+    for(let i=0; i<this.rockets.length; i++) {
+        let rocket = this.rockets[i];
+        ctx.drawImage(this.getImage('rocket'), rocket.x, rocket.y - 2, rocket.width, rocket.height);
+    }   
 
     //  Draw invaders.
     for(let i=0; i<this.invaders.length; i++) {
         let invader = this.invaders[i];
-        ctx.drawImage(this.getImage('invader'), invader.x - invader.width/2, invader.y - invader.height/2, invader.width, invader.height);
+        if (this.bossActivated) {
+            ctx.drawImage(this.getImage('invaderBigBoss'), invader.x - invader.width/2, invader.y - invader.height/2, invader.width, invader.height);
+            // (ctx, x, y, width, height, radius, fill, stroke)
+            ctx.fillStyle = '#20dd20';
+            roundRect(ctx, game.gameBounds.left - 10, game.height*0.05, game.width*0.05, game.height*0.01*invader.maxLives, 10, true);
+            ctx.fillStyle = '#e9b704';
+            roundRect(ctx, game.gameBounds.left - 10, game.height*0.05, game.width*0.05, game.height*0.01*invader.lives, 10, true);
+        } else {
+            ctx.drawImage(this.getImage('invader'), invader.x - invader.width/2, invader.y - invader.height/2, invader.width, invader.height);
+        }
     }
 
     //  Draw bombs.
@@ -757,11 +797,6 @@ PlayState.prototype.draw = function(game, dt, ctx) {
         ctx.drawImage(this.getImage('bomb'), bomb.x - 2, bomb.y - 2, bomb.width, bomb.height);
     }
 
-    //  Draw rockets.
-    for(let i=0; i<this.rockets.length; i++) {
-        let rocket = this.rockets[i];
-        ctx.drawImage(this.getImage('rocket'), rocket.x, rocket.y - 2, rocket.width, rocket.height);
-    }
 
     //  Draw killed invaders.
     for(let i=0; i<this.invadersKilled.length; i++) {
@@ -945,6 +980,15 @@ PlayState.prototype.activateBonus = function(game) {
     }
 };
 
+
+function RedirectState() {
+
+}
+
+RedirectState.prototype.enter = function(game) {
+    window.location.replace("https://dataiku.typeform.com/to/K6kEJg");
+}
+
 function PauseState() {
 
 }
@@ -1067,17 +1111,33 @@ function Bomb(x, y, velocity) {
 /*
     Invader 
 
-    Invader's have position, type, rank/file and that's about it. 
+    Invader's have position, rank/file and that's about it. 
 */
 
-function Invader(x, y, rank, file, type) {
+function Invader(x, y, rank, file) {
     this.x = x;
     this.y = y;
     this.rank = rank;
     this.file = file;
-    this.type = type;
     this.width = 18;
     this.height = 24;
+}
+
+/*
+    Invader Big boss
+
+    Invader's final boss which appear at level 10.
+*/
+
+function InvaderBigBoss(x, y) {
+    this.x = x;
+    this.y = y;
+    this.rank = 1;
+    this.file = Math.floor(Math.random() * 10) + 1;
+    this.width = 54;
+    this.height = 72;
+    this.lives = 20;
+    this.maxLives = this.lives;
 }
 
 /*
