@@ -251,8 +251,6 @@ DisplayState.prototype.enter = function(game) {
     this.particles = [];
     this.timeout = false;
     this.lineHeight = game.width/40;
-    this.fps = 0;
-    this.displayTextIterations = 0;
     //
     this.text = new Text({
         copy: 'Dataiku presents : Egg Invaders',
@@ -264,10 +262,6 @@ DisplayState.prototype.enter = function(game) {
 
 DisplayState.prototype.update = function(game, dt) {
     this.done = this.text.update();
-    if (this.done == "done" && !this.timeout) {
-        window.setTimeout(function(){ game.moveToState(new WelcomeState()); }, 25000);
-        this.timeout = true;
-    }
     this.laser.forEach((l, i) => l.update(i, this.laser));
     this.particles.forEach(p => p.update());
 };
@@ -293,7 +287,8 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
                     'Your aim is to defeat the rows of Eggs',
                     'before they advance toward the bottom of the screen.',
                     'But be careful - the more Eggs you defeat,',
-                    'the faster and more powerful they become.'];
+                    'the faster and more powerful they become.',
+                    '(Press Space or touch screen to start)'];
 
 
         ctx.textAlign = "center";
@@ -301,21 +296,20 @@ DisplayState.prototype.draw = function(game, dt, ctx) {
         ctx.font = this.lineHeight+"px Franklin Gothic Medium Condensed";
         ctx.fillStyle = '#feda4a';
 
-        if (Math.trunc(this.fps / game.config.fps) < data.length) {
-            for (let i = 0; i < data.length && i <= this.displayTextIterations; i++) {
-                ctx.fillText(data[i], game.width/2, game.height * 0.18 + i *(this.lineHeight+10));
-            }
-        }
-
-        this.fps++;
-
-        if (this.displayTextIterations < data.length) {
-            if (this.fps == data[this.displayTextIterations].length * 2) {
-                this.fps = 0;
-                this.displayTextIterations++;
-            }
+        for (let i = 0; i < data.length; i++) {
+            ctx.fillText(data[i], game.width/2, game.height * 0.2 + i *(this.lineHeight+9));
         }
     }
+};
+
+DisplayState.prototype.keyDown = function(game, keyCode) {
+    if(keyCode == 32) /*space*/ {
+        game.moveToState(new WelcomeState());
+    }
+};
+
+DisplayState.prototype.handleStart = function(game, e) {
+    game.moveToState(new WelcomeState());
 };
 
 function WelcomeState() {
@@ -352,8 +346,9 @@ WelcomeState.prototype.draw = function(game, dt, ctx) {
     ctx.font="16px Franklin Gothic Medium Condensed";
 
     ctx.fillText("Press 'Space' or touch screen to start.", game.width / 2, game.height/2);
+    ctx.fillText("Collect data and avoid rockets launch by eggs", game.width / 2 + 20, game.height/2 + 20);
     if (window.innerWidth < 900) {
-        ctx.fillText("Place one finger on left or right side to move in the desired direciton", game.width / 2 + 20, game.height/2 + 20); 
+        ctx.fillText("Place one finger on both side of the screen to move", game.width / 2 + 40, game.height/2 + 40); 
     }
 };
 
